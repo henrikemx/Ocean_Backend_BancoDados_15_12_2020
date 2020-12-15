@@ -4,6 +4,7 @@ const mongodb = require('mongodb');
 
 (async () => {
 
+<<<<<<< HEAD
 const connectString = 'mongodb://localhost:27017/';
 
 console.info('Conectando ao Banco de dados...');
@@ -13,6 +14,15 @@ const client = await mongodb.MongoClient.connect(connectString, {
 });
 
 // console.log(client);
+=======
+const connectionString = 'mongodb://localhost:27017/';
+
+console.info('Conectando ao banco de dados...');
+
+const client = await mongodb.MongoClient.connect(connectionString, {
+  useUnifiedTopology: true
+});
+>>>>>>> 0851b98e725597284c8d302e6c8246c8e30b83c0
 
 const app = express();
 
@@ -26,7 +36,11 @@ app.get('/', (req, res) => {
 // Create, Read (All or Single), Update, Delete
 // Criar, Ler (Tudo ou Individual), Atualizar e Remover
 
+<<<<<<< HEAD
 const db = client.db('ocean_bancodedados_15_12_2020');
+=======
+const db = client.db('ocean_bancodados_15_12_2020');
+>>>>>>> 0851b98e725597284c8d302e6c8246c8e30b83c0
 const mensagens = db.collection('mensagens');
 
 // [CREATE] - Criar uma mensagem
@@ -46,22 +60,35 @@ app.get('/mensagens', async (req, res) => {
 // [READ] Single - Ler apenas uma mensagem
 app.get('/mensagens/:id', async (req, res) => {
   const id = req.params.id;
+<<<<<<< HEAD
 
   res.send(await mensagens.findOne({_id: mongodb.ObjectId(id)}));
 
   // res.send(mensagem);
+=======
+
+  res.send(await mensagens.findOne({ _id: mongodb.ObjectId(id) }));
+>>>>>>> 0851b98e725597284c8d302e6c8246c8e30b83c0
 });
 
 // [UPDATE] - Editar uma mensagem
 app.put('/mensagens/:id', async (req, res) => {
   const id = req.params.id;
 
+<<<<<<< HEAD
   const novoTexto = req.body.texto;
 
   await mensagens.updateOne(
     {_id: mongodb.ObjectId(id)},
     { $set: req.body }
   );
+=======
+  await mensagens.updateOne(
+    { _id: mongodb.ObjectId(id) },
+    { $set: req.body }
+  );
+
+>>>>>>> 0851b98e725597284c8d302e6c8246c8e30b83c0
   res.send('Mensagem editada com sucesso!');
 });
 
@@ -69,7 +96,11 @@ app.put('/mensagens/:id', async (req, res) => {
 app.delete('/mensagens/:id', async (req, res) => {
   const id = req.params.id;
 
+<<<<<<< HEAD
   await mensagens.deleteOne({ _id: mongodb.ObjectId(id)});
+=======
+  await mensagens.deleteOne({ _id: mongodb.ObjectId(id) });
+>>>>>>> 0851b98e725597284c8d302e6c8246c8e30b83c0
 
   res.send('Mensagem foi excluída com sucesso!');
 });
@@ -77,4 +108,9 @@ app.delete('/mensagens/:id', async (req, res) => {
 app.listen(3000, () => {
   console.info('Servidor rodando em http://localhost:3000.');
 });
+<<<<<<< HEAD
 })();
+=======
+
+})();
+>>>>>>> 0851b98e725597284c8d302e6c8246c8e30b83c0
