@@ -1,71 +1,75 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongodb = require('mongodb');
+
+(async () => {
+
+const connectString = 'mongodb://localhost:27017/';
+
+console.info('Conectando ao Banco de dados...');
+
+const client = await mongodb.MongoClient.connect(connectString, {
+  useUnifiedTopology: true
+});
+
+// console.log(client);
 
 const app = express();
 
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('<h1>Hello World!</h1>');
 });
 
 // CRUD
 // Create, Read (All or Single), Update, Delete
 // Criar, Ler (Tudo ou Individual), Atualizar e Remover
 
-const mensagens = [
-  {
-    id: 1,
-    texto: 'Essa é a primeira mensagem'
-  },
-  {
-    id: 2,
-    texto: 'Essa é a segunda mensagem'
-  }
-];
+const db = client.db('ocean_bancodedados_15_12_2020');
+const mensagens = db.collection('mensagens');
 
 // [CREATE] - Criar uma mensagem
-app.post('/mensagens', (req, res) => {
+app.post('/mensagens', async (req, res) => {
   const mensagem = req.body;
 
-  const id = mensagens.length + 1;
-  mensagem.id = id;
-
-  mensagens.push(mensagem);
+  await mensagens.insertOne(mensagem);
 
   res.send(mensagem);
 });
 
 // [READ] All - Ler todas as mensagens
-app.get('/mensagens', (req, res) => {
-  res.send(mensagens.filter(Boolean));
+app.get('/mensagens', async (req, res) => {
+  res.send(await mensagens.find().toArray());
 });
 
 // [READ] Single - Ler apenas uma mensagem
-app.get('/mensagens/:id', (req, res) => {
-  const id = +req.params.id - 1;
+app.get('/mensagens/:id', async (req, res) => {
+  const id = req.params.id;
 
-  const mensagem = mensagens[id];
+  res.send(await mensagens.findOne({_id: mongodb.ObjectId(id)}));
 
-  res.send(mensagem);
+  // res.send(mensagem);
 });
 
 // [UPDATE] - Editar uma mensagem
-app.put('/mensagens/:id', (req, res) => {
-  const id = +req.params.id - 1;
+app.put('/mensagens/:id', async (req, res) => {
+  const id = req.params.id;
 
   const novoTexto = req.body.texto;
 
-  mensagens[id] = novoTexto;
-
+  await mensagens.updateOne(
+    {_id: mongodb.ObjectId(id)},
+    { $set: req.body }
+  );
   res.send('Mensagem editada com sucesso!');
 });
 
 // [DELETE] - Remover uma mensagem
-app.delete('/mensagens/:id', (req, res) => {
-  const id = +req.params.id - 1;
+app.delete('/mensagens/:id', async (req, res) => {
+  const id = req.params.id;
 
-  delete mensagens[id];
+  await mensagens.deleteOne({ _id: mongodb.ObjectId(id)});
 
   res.send('Mensagem foi excluída com sucesso!');
 });
@@ -73,3 +77,4 @@ app.delete('/mensagens/:id', (req, res) => {
 app.listen(3000, () => {
   console.info('Servidor rodando em http://localhost:3000.');
 });
+})();
